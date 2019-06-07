@@ -22,12 +22,13 @@ const (
 	NEWTERM = "("
 	ENDTERM = "("
 
+	MINUS = "-"
+
+	// Operators
 	OR      = "|"
-	COMMA   = ","
-	MINUS   = "-"
 	NOT     = "~"
 	AND     = "&"
-	STAR    = "*"
+	MULT    = "*"
 	DIV     = "/"
 	MOD     = "\\"
 	PLUS    = "+"
@@ -35,6 +36,7 @@ const (
 	LESS    = "<"
 	AT      = "@"
 	PERCENT = "%"
+	COMMA   = ","
 
 	SINGLE_QUOTE = "'"
 

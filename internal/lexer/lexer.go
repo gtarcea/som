@@ -31,6 +31,30 @@ func (l *Lexer) NextToken() token.Token {
 		t = l.lexColon()
 	case '\'':
 		t = l.lexString()
+	case '|':
+		t = newToken(token.OR, l.char)
+	case '~':
+		t = newToken(token.NOT, l.char)
+	case '&':
+		t = newToken(token.AND, l.char)
+	case '*':
+		t = newToken(token.MULT, l.char)
+	case '/':
+		t = newToken(token.DIV, l.char)
+	case '\\':
+		t = newToken(token.MOD, l.char)
+	case '+':
+		t = newToken(token.PLUS, l.char)
+	case '>':
+		t = newToken(token.MORE, l.char)
+	case '<':
+		t = newToken(token.LESS, l.char)
+	case '@':
+		t = newToken(token.AT, l.char)
+	case '%':
+		t = newToken(token.PERCENT, l.char)
+	case ',':
+		t = newToken(token.COMMA, l.char)
 	}
 
 	l.readChar()
