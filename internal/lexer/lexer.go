@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/gtarcea/som/internal/token"
+import (
+	"strings"
+
+	"github.com/gtarcea/som/internal/token"
+)
 
 type Lexer struct {
 	input           string
@@ -24,17 +28,67 @@ func (l *Lexer) NextToken() token.Token {
 	case '=':
 		t = newToken(token.EQUAL, l.char)
 	case ':':
-		if l.peekChar() == '=' {
-			char := l.char
-			l.readChar()
-			literal := string(char) + string(l.char)
-			t = token.Token{Type: token.ASSIGN, Literal: literal}
-		} else {
-			t = newToken(token.COLON, l.char)
-		}
+		t = l.lexColon()
+	case '\'':
+		t = l.lexString()
 	}
 
+	l.readChar()
 	return t
+}
+
+func (l *Lexer) lexColon() token.Token {
+	if l.peekChar() == '=' {
+		char := l.char
+		l.readChar()
+		literal := string(char) + string(l.char)
+		return token.Token{Type: token.ASSIGN, Literal: literal}
+	}
+
+	return newToken(token.COLON, l.char)
+}
+
+func (l *Lexer) lexString() token.Token {
+	var b strings.Builder
+
+	b.WriteString("'")
+	for {
+		l.readChar()
+		if l.char == '\'' {
+			break
+		}
+		l.lexStringChar(&b)
+	}
+	b.WriteString("'")
+	return token.Token{Type: token.STRING, Literal: b.String()}
+}
+
+func (l *Lexer) lexStringChar(b *strings.Builder) {
+	if l.char == '\\' {
+		l.lexEscapeChar(b)
+	} else {
+		b.WriteByte(l.char)
+	}
+}
+
+func (l *Lexer) lexEscapeChar(b *strings.Builder) {
+	l.readChar()
+	switch l.char {
+	case 't':
+		b.WriteString("\t")
+	case 'b':
+		b.WriteString("\b")
+	case 'n':
+		b.WriteString("\n")
+	case 'r':
+		b.WriteString("\r")
+	case 'f':
+		b.WriteString("\f")
+	case '\'':
+		b.WriteString("\\'")
+	case '\\':
+		b.WriteString("\\")
+	}
 }
 
 func (l *Lexer) skipWhitespace() {

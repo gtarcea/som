@@ -13,6 +13,8 @@ const (
 
 	PRIMITIVE = "primitive"
 
+	STRING = "string"
+
 	EQUAL = "="
 
 	SEPARATOR = "----"
@@ -33,6 +35,8 @@ const (
 	LESS    = "<"
 	AT      = "@"
 	PERCENT = "%"
+
+	SINGLE_QUOTE = "'"
 
 	COLON = ":"
 
