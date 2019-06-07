@@ -20,7 +20,7 @@ const (
 	SEPARATOR = "----"
 
 	NEWTERM = "("
-	ENDTERM = "("
+	ENDTERM = ")"
 
 	MINUS = "-"
 

@@ -26,35 +26,49 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.char {
 	case '=':
-		t = newToken(token.EQUAL, l.char)
+		t = l.newTokenFromChar(token.EQUAL)
 	case ':':
 		t = l.lexColon()
 	case '\'':
 		t = l.lexString()
 	case '|':
-		t = newToken(token.OR, l.char)
+		t = l.newTokenFromChar(token.OR)
 	case '~':
-		t = newToken(token.NOT, l.char)
+		t = l.newTokenFromChar(token.NOT)
 	case '&':
-		t = newToken(token.AND, l.char)
+		t = l.newTokenFromChar(token.AND)
 	case '*':
-		t = newToken(token.MULT, l.char)
+		t = l.newTokenFromChar(token.MULT)
 	case '/':
-		t = newToken(token.DIV, l.char)
+		t = l.newTokenFromChar(token.DIV)
 	case '\\':
-		t = newToken(token.MOD, l.char)
+		t = l.newTokenFromChar(token.MOD)
 	case '+':
-		t = newToken(token.PLUS, l.char)
+		t = l.newTokenFromChar(token.PLUS)
 	case '>':
-		t = newToken(token.MORE, l.char)
+		t = l.newTokenFromChar(token.MORE)
 	case '<':
-		t = newToken(token.LESS, l.char)
+		t = l.newTokenFromChar(token.LESS)
 	case '@':
-		t = newToken(token.AT, l.char)
+		t = l.newTokenFromChar(token.AT)
 	case '%':
-		t = newToken(token.PERCENT, l.char)
+		t = l.newTokenFromChar(token.PERCENT)
 	case ',':
-		t = newToken(token.COMMA, l.char)
+		t = l.newTokenFromChar(token.COMMA)
+	case '[':
+		t = l.newTokenFromChar(token.NEWBLOCK)
+	case ']':
+		t = l.newTokenFromChar(token.ENDBLOCK)
+	case '(':
+		t = l.newTokenFromChar(token.NEWTERM)
+	case ')':
+		t = l.newTokenFromChar(token.ENDTERM)
+	case '#':
+		t = l.newTokenFromChar(token.POUND)
+	case '^':
+		t = l.newTokenFromChar(token.EXIT)
+	case '.':
+		t = l.newTokenFromChar(token.PERIOD)
 	}
 
 	l.readChar()
@@ -176,6 +190,10 @@ func isLetter(char byte) bool {
 
 func isDigit(char byte) bool {
 	return '0' <= char && char <= '9'
+}
+
+func (l *Lexer) newTokenFromChar(tokenType token.Type) token.Token {
+	return token.Token{Type: tokenType, Literal: string(l.char)}
 }
 
 func newToken(tokenType token.Type, char byte) token.Token {
