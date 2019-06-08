@@ -24,55 +24,61 @@ func (l *Lexer) NextToken() token.Token {
 
 	l.skipWhitespace()
 
-	switch l.char {
-	case '=':
+	switch {
+	case l.charIs('='):
 		t = l.newTokenFromChar(token.EQUAL)
-	case ':':
+	case l.charIs(':'):
 		t = l.lexColon()
-	case '\'':
+	case l.charIs('\''):
 		t = l.lexString()
-	case '|':
+	case l.charIs('|'):
 		t = l.newTokenFromChar(token.OR)
-	case '~':
+	case l.charIs('~'):
 		t = l.newTokenFromChar(token.NOT)
-	case '&':
+	case l.charIs('&'):
 		t = l.newTokenFromChar(token.AND)
-	case '*':
+	case l.charIs('*'):
 		t = l.newTokenFromChar(token.MULT)
-	case '/':
+	case l.charIs('/'):
 		t = l.newTokenFromChar(token.DIV)
-	case '\\':
+	case l.charIs('\\'):
 		t = l.newTokenFromChar(token.MOD)
-	case '+':
+	case l.charIs('+'):
 		t = l.newTokenFromChar(token.PLUS)
-	case '>':
+	case l.charIs('>'):
 		t = l.newTokenFromChar(token.MORE)
-	case '<':
+	case l.charIs('<'):
 		t = l.newTokenFromChar(token.LESS)
-	case '@':
+	case l.charIs('@'):
 		t = l.newTokenFromChar(token.AT)
-	case '%':
+	case l.charIs('%'):
 		t = l.newTokenFromChar(token.PERCENT)
-	case ',':
+	case l.charIs(','):
 		t = l.newTokenFromChar(token.COMMA)
-	case '[':
+	case l.charIs('['):
 		t = l.newTokenFromChar(token.NEWBLOCK)
-	case ']':
+	case l.charIs(']'):
 		t = l.newTokenFromChar(token.ENDBLOCK)
-	case '(':
+	case l.charIs('('):
 		t = l.newTokenFromChar(token.NEWTERM)
-	case ')':
+	case l.charIs(')'):
 		t = l.newTokenFromChar(token.ENDTERM)
-	case '#':
+	case l.charIs('#'):
 		t = l.newTokenFromChar(token.POUND)
-	case '^':
+	case l.charIs('^'):
 		t = l.newTokenFromChar(token.EXIT)
-	case '.':
+	case l.charIs('.'):
 		t = l.newTokenFromChar(token.PERIOD)
+	case isLetter(l.char):
+		t = l.lexIdentifier()
 	}
 
 	l.readChar()
 	return t
+}
+
+func (l *Lexer) charIs(c byte) bool {
+	return c == l.char
 }
 
 func (l *Lexer) lexColon() token.Token {
@@ -127,6 +133,11 @@ func (l *Lexer) lexEscapeChar(b *strings.Builder) {
 	case '\\':
 		b.WriteString("\\")
 	}
+}
+
+// TODO: Fill this out
+func (l *Lexer) lexIdentifier() token.Token {
+	return token.Token{Type: token.IDENTIFIER, Literal: "identifier"}
 }
 
 func (l *Lexer) skipWhitespace() {

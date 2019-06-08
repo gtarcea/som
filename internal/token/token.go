@@ -49,4 +49,6 @@ const (
 	EXIT   = "^"
 	PERIOD = "."
 	ASSIGN = ":="
+
+	IDENTIFIER = "identifier"
 )
