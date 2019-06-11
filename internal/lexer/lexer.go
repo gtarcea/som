@@ -71,6 +71,8 @@ func (l *Lexer) NextToken() token.Token {
 		t = l.newTokenFromChar(token.PERIOD)
 	case isLetter(l.char):
 		t = l.lexIdentifier()
+	case isDigit(l.char):
+		t = l.lexDigit()
 	}
 
 	l.readChar()
@@ -135,9 +137,89 @@ func (l *Lexer) lexEscapeChar(b *strings.Builder) {
 	}
 }
 
-// TODO: Fill this out
 func (l *Lexer) lexIdentifier() token.Token {
-	return token.Token{Type: token.IDENTIFIER, Literal: "identifier"}
+	var (
+		b strings.Builder
+	)
+	tokenType := token.IDENTIFIER
+
+	b.WriteByte(l.char)
+	for {
+		char := l.peekChar()
+		if !isAlphaNumeric(char) && char != '_' {
+			break
+		}
+
+		l.readChar()
+		b.WriteByte(l.char)
+	}
+
+	if l.peekChar() == ':' {
+		tokenType = token.KEYWORD
+		l.readChar()
+		b.WriteByte(l.char)
+		char := l.peekChar()
+		if isLetter(char) {
+			tokenType = token.KEYWORD_SEQUENCE
+			l.readChar()
+			b.WriteByte(l.char)
+			for {
+				char := l.peekChar()
+				if !isLetter(char) && char != ':' {
+					break
+				}
+				l.readChar()
+				b.WriteByte(l.char)
+			}
+		}
+	}
+
+	return token.Token{Type: token.Type(tokenType), Literal: b.String()}
+}
+
+func (l *Lexer) lexDigit() token.Token {
+	var b strings.Builder
+	b.WriteByte(l.char)
+
+	t := token.Token{Type: token.INTEGER}
+	sawPeriod := false
+
+Loop:
+	for {
+		char := l.peekChar()
+		switch {
+		case char == '.' && !sawPeriod:
+			char2 := l.peek2Char()
+			if isDigit(char2) {
+				// At this point we have seen a string that looks as follows:
+				//   111.111
+				// That is we've seen 1 or more numbers and then the peek shows us
+				// a period, and peek2 shows a number after the period, so we are
+				// reading a double. Also !sawPeriod ensures we haven't yet seen
+				// a period. (The next time we see a period we know we are no longer
+				// lexing a number and will exit the loop.)
+
+				// advance lexer so that l.char == '.'
+				l.readChar()
+				// Now that we've seen a period make sure we don't drop back into this block
+				sawPeriod = true
+				// We are reading a double at this point
+				t.Type = token.DOUBLE
+			}
+		case isDigit(char):
+			// peek is a digit so advance lexer so that l.char is that digit
+			l.readChar()
+		default:
+			// Either we are seeing a second period or a non-numeric character - either way exit loop
+			break Loop
+		}
+
+		b.WriteByte(l.char)
+	}
+
+	t.Literal = b.String()
+
+	return t
 }
 
 func (l *Lexer) skipWhitespace() {
@@ -163,6 +245,14 @@ func (l *Lexer) peekChar() byte {
 	}
 
 	return l.input[l.readPosition]
+}
+
+func (l *Lexer) peek2Char() byte {
+	if l.readPosition+1 >= len(l.input) {
+		return 0
+	}
+
+	return l.input[l.readPosition+1]
 }
 
 func (l *Lexer) readIdentifier() string {
@@ -201,6 +291,10 @@ func isLetter(char byte) bool {
 
 func isDigit(char byte) bool {
 	return '0' <= char && char <= '9'
+}
+
+func isAlphaNumeric(char byte) bool {
+	return isLetter(char) || isDigit(char)
 }
 
 func (l *Lexer) newTokenFromChar(tokenType token.Type) token.Token {

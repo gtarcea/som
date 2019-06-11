@@ -50,5 +50,10 @@ const (
 	PERIOD = "."
 	ASSIGN = ":="
 
-	IDENTIFIER = "identifier"
+	IDENTIFIER       = "identifier"
+	KEYWORD          = "keyword"
+	KEYWORD_SEQUENCE = "keyword_sequence"
+
+	INTEGER = "integer"
+	DOUBLE  = "double"
 )

@@ -9,7 +9,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `=::= 'hello' 'hello\''
+	input := `=::= 'hello' 'hello\'' 123 123.3
 `
 	tests := []struct {
 		expectedTokenType token.Type
@@ -20,6 +20,8 @@ func TestNextToken(t *testing.T) {
 		{token.ASSIGN, ":="},
 		{token.STRING, "'hello'"},
 		{token.STRING, "'hello\\''"},
+		{token.INTEGER, "123"},
+		{token.DOUBLE, "123.3"},
 	}
 
 	l := NewLexer(input)
