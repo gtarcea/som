@@ -146,7 +146,7 @@ func (l *Lexer) lexIdentifier() token.Token {
 	b.WriteByte(l.char)
 	for {
 		char := l.peekChar()
-		if !isAlphaNumeric(char) && char != '_' {
+		if !isIdentifierChar(char) {
 			break
 		}
 
@@ -165,7 +165,7 @@ func (l *Lexer) lexIdentifier() token.Token {
 			b.WriteByte(l.char)
 			for {
 				char := l.peekChar()
-				if !isLetter(char) && char != ':' {
+				if !isIdentifierChar(char) && char != ':' {
 					break
 				}
 				l.readChar()
@@ -295,6 +295,10 @@ func isDigit(char byte) bool {
 
 func isAlphaNumeric(char byte) bool {
 	return isLetter(char) || isDigit(char)
+}
+
+func isIdentifierChar(char byte) bool {
+	return isAlphaNumeric(char) || char == '_'
 }
 
 func (l *Lexer) newTokenFromChar(tokenType token.Type) token.Token {
