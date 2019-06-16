@@ -31,6 +31,8 @@ func (l *Lexer) NextToken() token.Token {
 		t = l.lexColon()
 	case l.charIs('\''):
 		t = l.lexString()
+	case l.charIs('-'):
+		t = l.lexMinus()
 	case l.charIs('|'):
 		t = l.newTokenFromChar(token.OR)
 	case l.charIs('~'):
@@ -70,7 +72,7 @@ func (l *Lexer) NextToken() token.Token {
 	case l.charIs('.'):
 		t = l.newTokenFromChar(token.PERIOD)
 	case isLetter(l.char):
-		t = l.lexIdentifier()
+		t = l.lexIdentifierOrPrimitive()
 	case isDigit(l.char):
 		t = l.lexDigit()
 	}
@@ -92,6 +94,28 @@ func (l *Lexer) lexColon() token.Token {
 	}
 
 	return newToken(token.COLON, l.char)
+}
+
+func (l *Lexer) lexMinus() token.Token {
+	t := token.Token{Type: token.MINUS}
+	if strings.HasPrefix(l.input[l.currentPosition:], "----") {
+		t.Type = token.SEPARATOR
+		var b strings.Builder
+		b.WriteByte(l.char)
+		for {
+			char := l.peekChar()
+			if char != '-' {
+				break
+			}
+			l.readChar()
+			b.WriteByte(l.char)
+		}
+		t.Literal = b.String()
+	} else {
+		t.Literal = "-"
+	}
+
+	return t
 }
 
 func (l *Lexer) lexString() token.Token {
@@ -137,7 +161,20 @@ func (l *Lexer) lexEscapeChar(b *strings.Builder) {
 	}
 }
 
-func (l *Lexer) lexIdentifier() token.Token {
+func (l *Lexer) lexIdentifierOrPrimitive() token.Token {
+	if l.char == 'p' {
+		// could be the word primitive
+		if strings.HasPrefix(l.input[l.currentPosition:], "primitive") {
+			for l.char != 'e' {
+				l.readChar()
+			}
+
+			return token.Token{Type: token.PRIMITIVE, Literal: "primitive"}
+		}
+	}
+
+	// If not primitive then we are reading an identifier
+
 	var (
 		b strings.Builder
 	)
