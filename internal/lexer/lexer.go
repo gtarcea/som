@@ -162,19 +162,6 @@ func (l *Lexer) lexEscapeChar(b *strings.Builder) {
 }
 
 func (l *Lexer) lexIdentifierOrPrimitive() token.Token {
-	if l.char == 'p' {
-		// could be the word primitive
-		if strings.HasPrefix(l.input[l.currentPosition:], "primitive") {
-			for l.char != 'e' {
-				l.readChar()
-			}
-
-			return token.Token{Type: token.PRIMITIVE, Literal: "primitive"}
-		}
-	}
-
-	// If not primitive then we are reading an identifier
-
 	var (
 		b strings.Builder
 	)
@@ -211,7 +198,12 @@ func (l *Lexer) lexIdentifierOrPrimitive() token.Token {
 		}
 	}
 
-	return token.Token{Type: token.Type(tokenType), Literal: b.String()}
+	literal := b.String()
+	if literal == "primitive" {
+		return token.Token{Type: token.PRIMITIVE, Literal: literal}
+	}
+
+	return token.Token{Type: token.Type(tokenType), Literal: literal}
 }
 
 func (l *Lexer) lexDigit() token.Token {
