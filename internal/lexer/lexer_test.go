@@ -10,7 +10,7 @@ import (
 
 func TestNextToken(t *testing.T) {
 	input := `=::= 'hello' 'hello\'' 123 123.3
-----primitive
+----primitive primitiveVar
 `
 	tests := []struct {
 		expectedTokenType token.Type
@@ -25,6 +25,7 @@ func TestNextToken(t *testing.T) {
 		{token.DOUBLE, "123.3"},
 		{token.SEPARATOR, "----"},
 		{token.PRIMITIVE, "primitive"},
+		{token.IDENTIFIER, "primitiveVar"},
 	}
 
 	l := NewLexer(input)
