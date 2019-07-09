@@ -8,6 +8,18 @@
   version = "v1.1.1"
 
 [[projects]]
+  name = "github.com/hashicorp/errwrap"
+  packages = ["."]
+  revision = "8a6fb523712970c966eefc6b39ed2c5e74880354"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/hashicorp/go-multierror"
+  packages = ["."]
+  revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -25,6 +37,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4e74844cc0163f383b0d0bb6c97ad78dc4df008646534aa3a288fd8af1831c7e"
+  inputs-digest = "ec8674b8569bfe338ec8c24dabe8bc72ee9d37f7f11ad59de944a5a2ce7de928"
   solver-name = "gps-cdcl"
   solver-version = 1
